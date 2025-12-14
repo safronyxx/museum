@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" th:href="@{/css/favicon.ico}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<header>
+    <nav class="headnav">
+        <div class="heading">
+            <h4>Музей зелени</h4>
+            <p class="sub">The first museum of greenery</p>
+        </div>
+
+
+        <nav class="navbar">
+            <div class="leaf">
+                <img src="/css/leaf.png" alt="Иконка листика">
+            </div>
+            <a th:href="@{/exhibits}" class="nav-link">Экспонаты</a>
+
+            <a th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN') or currentUserAuthorities.toString().contains('GUIDE')}"
+               th:href="@{/halls}" class="nav-link" >Залы</a>
+
+            <a th:href="@{/exhibitions}" class="nav-link">Выставки</a>
+
+            <a th:href="@{/visits}" class="nav-link">Посещения</a>
+
+            <a th:href="@{/about}" class="nav-link">Об авторе</a>
+
+            <a th:if="${currentUserAuthorities.toString().contains('SUPER_ADMIN')}"
+               th:href="@{/users}" class="nav-link">Пользователи</a>
+
+            <a th:if="${currentUserAuthorities?.toString()?.contains('ADMIN') or currentUserAuthorities?.toString()?.contains('SUPER_ADMIN') or currentUserAuthorities?.toString()?.contains('GUIDE')}"
+               th:href="@{/statistics}" class="nav-link">Статистика</a>
+
+        </nav>
+
+
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+            <span class="hello">Здравствуйте, <b th:text="${currentUserFullName}">Имя</b>!</span>
+            <a th:href="@{/logout}" class="nav-link exit">Выйти</a>
+        </div>
+
+    </nav>
+</header>
+
+
+<body class="container">
+
+<!--<div class="background-overlay1"></div> -->
+
+
+<div class="card">
+    <h1 style="padding-left: 40px;">Статистика посещений выставок</h1>
+    <p style="padding-left: 40px;">Количество записавшихся посетителей по каждой выставке</p>
+
+    <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 20px;">
+        <div style="flex: 1; min-width: 300px; padding-left: 40px">
+            <div class="chart-container">
+                <div th:if="${statistics.isEmpty()}">
+                    <p>Нет данных для отображения. Создайте выставки и зарегистрируйте посещения.</p>
+                </div>
+                <div th:each="item : ${statistics}" class="bar-item">
+                    <div class="bar-label" th:text="${item[0]}">Название выставки</div>
+                    <div class="bar" th:text="${item[1]}">0</div>
+                </div>
+            </div>
+        </div>
+        <div style="min-width: 300px; margin-top: -110px; padding-right: 200px;">
+            <h1 style="margin-top: 0; white-space: nowrap">Распределение выставок по гидам</h1>
+            <div style="width: 100%; height: 500px;">
+                <canvas id="guidePieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const ctx = document.getElementById('guidePieChart').getContext('2d');
+        const labels = /*[[${guideExhibitionLabels}]]*/ [];
+        const data = /*[[${guideExhibitionData}]]*/ [];
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' выставок';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-copyright">
+        &copy; 2025 Музей зелени.
+    </div>
+</footer>
+
+</body>
+</html>
+

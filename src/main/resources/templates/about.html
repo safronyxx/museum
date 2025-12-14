@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Об авторе</title>
+  <link rel="icon" th:href="@{/css/favicon.ico}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<header>
+  <nav class="headnav">
+    <div class="heading">
+      <h4>Музей зелени</h4>
+      <p class="sub">The first museum of greenery</p>
+    </div>
+
+
+    <nav class="navbar">
+      <div class="leaf">
+        <img src="/css/leaf.png" alt="Иконка листика">
+      </div>
+      <a th:href="@{/exhibits}" class="nav-link">Экспонаты</a>
+
+      <a th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN') or currentUserAuthorities.toString().contains('GUIDE')}"
+         th:href="@{/halls}" class="nav-link" >Залы</a>
+
+      <a th:href="@{/exhibitions}" class="nav-link">Выставки</a>
+
+      <a th:href="@{/visits}" class="nav-link">Посещения</a>
+
+      <a th:href="@{/about}" class="nav-link">Об авторе</a>
+
+      <!-- Только для админов: управление пользователями -->
+      <a th:if="${currentUserAuthorities.toString().contains('SUPER_ADMIN')}"
+         th:href="@{/users}" class="nav-link">Пользователи</a>
+
+      <a th:if="${currentUserAuthorities?.toString()?.contains('ADMIN') or currentUserAuthorities?.toString()?.contains('SUPER_ADMIN') or currentUserAuthorities?.toString()?.contains('GUIDE')}"
+         th:href="@{/statistics}" class="nav-link">Статистика</a>
+
+    </nav>
+
+
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+      <span class="hello">Здравствуйте, <b th:text="${currentUserFullName}">Имя</b>!</span>
+      <a th:href="@{/logout}" class="nav-link exit">Выйти</a>
+    </div>
+
+  </nav>
+</header>
+
+
+
+<body class="container">
+
+
+ <!--<div class="background-overlay1"></div> -->
+
+<div class="card author">
+  <h1>Об авторе</h1>
+
+  <p><strong>ФИО автора:</strong> Костенко М. С.</p>
+  <p><strong>Группа:</strong> ИД23-1</p>
+  <p><strong>Учебное заведение:</strong> Финансовый университет при Правительстве Российской Федерации</p>
+  <p><strong>Контактные данные:</strong> 233477@edu.fa.ru </p>
+
+  <h2 class="spacing">Опыт работы с технологиями</h2>
+  <p>
+    В ходе выполнения курсовой работы были использованы следующие технологии:
+    Java 21, Spring Boot, Spring Data JPA (с Hibernate в качестве ORM),
+    Spring Security для реализации ролевой модели и аутентификации,
+    Thymeleaf — для построения динамического веб-интерфейса,
+    PostgreSQL — в качестве системы управления базой данных.
+    Проект разрабатывался в среде IntelliJ IDEA, сборка осуществлялась с помощью Maven.
+    Была реализована трёхзвенная архитектура приложения (представление — сервер — данные),
+    а также обеспечена защита от SQL-инъекций и XSS-уязвимостей за счёт использования ORM и шаблонизатора.
+  </p>
+
+  <h2 class="spacing">Сроки выполнения проекта</h2>
+  <p>
+    <strong>Начало работы:</strong> 20.10.2025<br>
+    <strong>Завершение разработки:</strong> 11.12.2025
+  </p>
+
+</div>
+
+<footer class="main-footer">
+  <div class="footer-copyright">
+    &copy; 2025 Музей зелени.
+  </div>
+</footer>
+
+</body>
+</html>

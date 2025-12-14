@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Мои выставки</title>
+  <link rel="icon" th:href="@{/css/favicon.ico}">
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<header>
+  <nav class="headnav">
+    <div class="heading">
+      <h4>Музей зелени</h4>
+      <p class="sub">The first museum of greenery</p>
+    </div>
+
+
+    <nav class="navbar">
+      <div class="leaf">
+        <img src="/css/leaf.png" alt="Иконка листика">
+      </div>
+      <a th:href="@{/exhibits}" class="nav-link">Экспонаты</a>
+
+      <a th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN') or currentUserAuthorities.toString().contains('GUIDE')}"
+         th:href="@{/halls}" class="nav-link" >Залы</a>
+
+      <a th:href="@{/exhibitions}" class="nav-link">Выставки</a>
+
+      <a th:href="@{/visits}" class="nav-link">Посещения</a>
+
+      <a th:href="@{/about}" class="nav-link">Об авторе</a>
+
+      <!-- Только для админов: управление пользователями -->
+      <a th:if="${currentUserAuthorities.toString().contains('SUPER_ADMIN')}"
+         th:href="@{/users}" class="nav-link">Пользователи</a>
+
+      <a th:if="${currentUserAuthorities?.toString()?.contains('ADMIN') or currentUserAuthorities?.toString()?.contains('SUPER_ADMIN') or currentUserAuthorities?.toString()?.contains('GUIDE')}"
+         th:href="@{/statistics}" class="nav-link">Статистика</a>
+
+    </nav>
+
+
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+      <span class="hello">Здравствуйте, <b th:text="${currentUserFullName}">Имя</b>!</span>
+      <a th:href="@{/logout}" class="nav-link exit">Выйти</a>
+    </div>
+
+  </nav>
+</header>
+
+
+
+<body class="container">
+
+<div class="card">
+  <h1>Мои выставки</h1>
+  <div class="table-container">
+    <table>
+      <thead>
+      <tr>
+        <th>Название</th>
+        <th>Дата начала</th>
+        <th>Дата окончания</th>
+        <th>Описание</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${myExhibitions.empty}">
+        <td colspan="4" style="text-align:center;">У вас пока нет выставок</td>
+      </tr>
+      <tr th:each="e : ${myExhibitions}">
+        <td th:text="${e.title}">Название</td>
+        <td th:text="${e.startDate}">Начало</td>
+        <td th:text="${e.endDate}">Окончание</td>
+        <td th:text="${e.description ?: '—'}">Описание</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer class="main-footer">
+  <div class="footer-copyright">
+    &copy; 2025 Музей зелени.
+  </div>
+</footer>
+
+
+</body>
+</html>

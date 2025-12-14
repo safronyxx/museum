@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Посещения</title>
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+
+<header>
+  <nav class="headnav">
+    <div class="heading">
+      <h4>Музей зелени</h4>
+      <p class="sub">The first museum of greenery</p>
+    </div>
+
+
+    <nav class="navbar">
+      <div class="leaf">
+        <img src="/css/leaf.png" alt="Иконка листика">
+      </div>
+      <a th:href="@{/exhibits}" class="nav-link">Экспонаты</a>
+
+      <a th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN') or currentUserAuthorities.toString().contains('GUIDE')}"
+         th:href="@{/halls}" class="nav-link" >Залы</a>
+
+      <a th:href="@{/exhibitions}" class="nav-link">Выставки</a>
+
+      <a th:href="@{/visits}" class="nav-link">Посещения</a>
+
+      <a th:href="@{/about}" class="nav-link">Об авторе</a>
+
+      <a th:if="${currentUserAuthorities.toString().contains('SUPER_ADMIN')}"
+         th:href="@{/users}" class="nav-link">Пользователи</a>
+
+      <a th:if="${currentUserAuthorities?.toString()?.contains('ADMIN') or currentUserAuthorities?.toString()?.contains('SUPER_ADMIN') or currentUserAuthorities?.toString()?.contains('GUIDE')}"
+         th:href="@{/statistics}" class="nav-link">Статистика</a>
+
+    </nav>
+
+
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+      <span class="hello">Здравствуйте, <b th:text="${currentUserFullName}">Имя</b>!</span>
+      <a th:href="@{/logout}" class="nav-link exit">Выйти</a>
+    </div>
+
+  </nav>
+</header>
+
+
+<body class="container">
+
+
+<!--<div class="background-overlay1"></div> -->
+
+
+<div class="card">
+
+  <div th:if="${visits != null}">
+    <h1>Журнал посещений</h1>
+
+    <form th:action="@{/visits}" method="get" class="row g-2 mb-4 align-items-center">
+      <div class="col-auto d-flex gap-2">
+        <label class="my-1 me-2">Сортировать по выставке:</label>
+        <select name="sort" class="form-control" style="width: auto;">
+          <option value="asc" th:selected="${currentSort == 'asc'}">А → Я</option>
+          <option value="desc" th:selected="${currentSort == 'desc'}">Я → А</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Применить</button>
+        <button type="submit" class="btn btn-primary"><a th:href="@{/visits}" style="color:white; text-decoration: none;">Сбросить</a></button>
+      </div>
+    </form>
+
+    <div class="table-container" style="margin-top: 20px;">
+      <table>
+        <thead>
+        <tr>
+          <th>Email посетителя</th>
+          <th>Выставка</th>
+          <th>Дата и время</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${visits.empty}">
+          <td colspan="3" style="text-align:center; color:#666;">Нет записей о посещениях</td>
+        </tr>
+        <tr th:each="visit : ${visits}">
+          <td th:text="${visit.visitorEmail}">email</td>
+          <td th:text="${visit.exhibition?.title ?: '—'}">Выставка</td>
+          <td th:text="${#temporals.format(visit.visitDate, 'yyyy-MM-dd HH:mm')}">2025-11-25 12:00</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div>
+    <h2>Зарегистрировать посещение</h2>
+
+
+    <div th:if="${message}" class="alert" style="color: #2e7d32; margin-bottom: 15px;">
+      <strong>Успех!</strong> <span th:text="${message}">Сообщение</span>
+    </div>
+
+    <form th:action="@{/visits/add}" th:object="${visit}" method="post" class="row g-3 mt-3">
+      <div class="col-md-4 form-group">
+        <label for="visitorEmail">Ваш email:</label>
+        <input type="email" id="visitorEmail"
+               th:value="${currentUserEmail}" readonly
+               class="form-control" required/>
+      </div>
+      <div class="col-md-5 form-group">
+        <label for="exhibition">Выберите выставку:</label>
+        <select name="exhibition.id" id="exhibition" class="form-control" required>
+          <option value="">— Выберите выставку —</option>
+          <option th:each="e : ${exhibitions}"
+                  th:value="${e.id}"
+                  th:text="${e.title + ' (' + e.startDate + ' – ' + e.endDate + ')'}">Выставка</option>
+        </select>
+      </div>
+      <div class="col-md-3 form-group">
+        <button type="submit" class="btn btn-primary w-100 mt-4">Зарегистрировать</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="main-footer">
+  <div class="footer-copyright">
+    &copy; 2025 Музей зелени.
+  </div>
+</footer>
+
+</body>
+</html>

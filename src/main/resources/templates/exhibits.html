@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Экспонаты музея</title>
+    <link rel="icon" th:href="@{/css/favicon.ico}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<header>
+    <nav class="headnav">
+        <div class="heading">
+            <h4>Музей зелени</h4>
+            <p class="sub">The first museum of greenery</p>
+        </div>
+
+
+        <nav class="navbar">
+            <div class="leaf">
+                <img src="/css/leaf.png" alt="Иконка листика">
+            </div>
+            <a th:href="@{/exhibits}" class="nav-link">Экспонаты</a>
+
+            <a th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN') or currentUserAuthorities.toString().contains('GUIDE')}"
+               th:href="@{/halls}" class="nav-link" >Залы</a>
+
+            <a th:href="@{/exhibitions}" class="nav-link">Выставки</a>
+
+            <a th:href="@{/visits}" class="nav-link">Посещения</a>
+
+            <a th:href="@{/about}" class="nav-link">Об авторе</a>
+
+            <!-- Только для админов: управление пользователями -->
+            <a th:if="${currentUserAuthorities.toString().contains('SUPER_ADMIN')}"
+               th:href="@{/users}" class="nav-link">Пользователи</a>
+
+            <a th:if="${currentUserAuthorities?.toString()?.contains('ADMIN') or currentUserAuthorities?.toString()?.contains('SUPER_ADMIN') or currentUserAuthorities?.toString()?.contains('GUIDE')}"
+               th:href="@{/statistics}" class="nav-link">Статистика</a>
+
+        </nav>
+
+
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+            <span class="hello">Здравствуйте, <b th:text="${currentUserFullName}">Имя</b>!</span>
+            <a th:href="@{/logout}" class="nav-link exit">Выйти</a>
+        </div>
+
+    </nav>
+</header>
+
+<body class="container">
+
+<!--<div class="background-overlay1"></div> -->
+
+
+
+<div class="card">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Каталог экспонатов</h1>
+        <form th:action="@{/exhibits}" method="get" class="row g-2 mb-4 align-items-center">
+            <div class="col-auto d-flex gap-2">
+                <input type="text" name="author" class="form-control"
+                       placeholder="Поиск по автору"
+                       th:value="${searchAuthor}" style="min-width: 200px;">
+                <input type="text" name="era" class="form-control"
+                       placeholder="Поиск по эпохе"
+                       th:value="${searchEra}" style="min-width: 200px;">
+                <button type="submit" class="btn btn-primary">Найти</button>
+                <button type="submit" class="btn btn-primary"><a style="color:white; text-decoration: none;" th:href="@{/exhibits}">Сбросить</a></button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Год</th>
+                <th>Эпоха</th>
+                <th>Зал</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="exhibit : ${exhibits}">
+
+                <th:block th:if="${exhibit.id == editingId}">
+                    <td colspan="6" class="edit-form">
+                        <form th:action="@{/exhibits/save}" th:object="${exhibit}" method="post">
+                            <input type="hidden" th:field="*{id}"/>
+                            <div class="col-md-3 form-group">
+                                <input type="text" th:field="*{name}" class="form-control" placeholder="Название" required/>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <input type="text" th:field="*{author}" class="form-control" placeholder="Автор" required/>
+                            </div>
+                            <div class="col-md-1 form-group">
+                                <input type="number" th:field="*{creationYear}" class="form-control" placeholder="Год" required/>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <input type="text" th:field="*{era}" class="form-control" placeholder="Эпоха" required/>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <select th:field="*{hall}" class="form-control" required>
+                                    <option th:each="h : ${halls}" th:value="${h.id}" th:text="${h.name}" th:selected="${h.id == exhibit.hall?.id}">Зал</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Сохранить</button>
+                                <a th:href="@{/exhibits}" class="btn btn-outline">Отмена</a>
+                            </div>
+                        </form>
+                    </td>
+                </th:block>
+
+
+                <th:block th:if="${exhibit.id != editingId}">
+                    <td th:text="${exhibit.name}">Название</td>
+                    <td th:text="${exhibit.author}">Автор</td>
+                    <td th:text="${exhibit.creationYear}">Год</td>
+                    <td th:text="${exhibit.era}">Эпоха</td>
+                    <td th:text="${exhibit.hall?.name} ?: '—'">Зал</td>
+                    <td>
+                        <div th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN')}">
+                            <a th:href="@{'/exhibits/edit/' + ${exhibit.id}}" class="btn btn-warning">Редактировать</a>
+                            <a th:href="@{'/exhibits/delete/' + ${exhibit.id}}" class="btn btn-danger"
+                               onclick="return confirm('Удалить экспонат?')">Удалить</a>
+                        </div>
+                        <div th:if="${currentUserAuthorities.toString().contains('VISITOR') or currentUserAuthorities.toString().contains('GUIDE')}">
+                            <span>—</span>
+                        </div>
+                    </td>
+                </th:block>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div th:if="${currentUserAuthorities.toString().contains('ADMIN') or currentUserAuthorities.toString().contains('SUPER_ADMIN')}">
+        <h2>Добавить новый экспонат</h2>
+        <form th:action="@{/exhibits/add}" th:object="${exhibit}" method="post" class="row g-3 mt-3">
+            <div class="col-md-3 form-group">
+                <input type="text" class="form-control" placeholder="Название экспоната"
+                       th:field="*{name}" required/>
+            </div>
+            <div class="col-md-2 form-group">
+                <input type="text" class="form-control" placeholder="Автор"
+                       th:field="*{author}" required/>
+            </div>
+            <div class="col-md-1 form-group">
+                <input type="number" class="form-control" placeholder="Год создания"
+                       th:field="*{creationYear}" required/>
+            </div>
+            <div class="col-md-2 form-group">
+                <input type="text" class="form-control" placeholder="Историческая эпоха"
+                       th:field="*{era}" required/>
+            </div>
+            <div class="col-md-2 form-group">
+                <select class="form-control" th:field="*{hall}" required>
+                    <option value="">Выберите зал</option>
+                    <option th:each="h : ${halls}" th:value="${h.id}" th:text="${h.name}">Зал</option>
+                </select>
+            </div>
+            <div class="col-md-2 form-group">
+                <button type="submit" class="btn btn-primary w-100">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-copyright">
+        &copy; 2025 Музей зелени.
+    </div>
+</footer>
+
+</body>
+</html>
