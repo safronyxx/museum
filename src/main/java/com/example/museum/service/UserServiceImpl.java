@@ -8,6 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
+/**
+ * Реализация сервиса {@link UserService}.
+ * <p>
+ * Делегирует операции работы с пользователями репозиторию {@link UserRepository}.
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {

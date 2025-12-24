@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-
+/**
+ * Контроллер для управления выставками.
+ * <p>
+ * Обеспечивает CRUD-операции и выбор куратора из списка гидов.
+ */
 @Controller
 @RequestMapping("/exhibitions")
 public class ExhibitionController {
@@ -27,6 +31,14 @@ public class ExhibitionController {
         this.userService = userService;
     }
 
+
+    /**
+     * Отображает список выставок и форму добавления.
+     *
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibitions"
+     */
     @GetMapping({"", "/"})
     public String listExhibitions(Model model, Authentication authentication) {
         model.addAttribute("exhibitions", exhibitionService.findAll());
@@ -45,6 +57,19 @@ public class ExhibitionController {
         return "exhibitions";
     }
 
+
+    /**
+     * Добавляет новую выставку.
+     *
+     * @param title          название выставки
+     * @param curatorEmail   email куратора (гида)
+     * @param startDate      дата начала
+     * @param endDate        дата окончания
+     * @param description    описание (опционально)
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return шаблон "exhibitions" или перенаправление
+     */
     @PostMapping("/add")
     public String addExhibition(@RequestParam String title,
                                 @RequestParam String curatorEmail,
@@ -91,6 +116,15 @@ public class ExhibitionController {
         return "redirect:/exhibitions";
     }
 
+
+    /**
+     * Отображает форму редактирования выставки.
+     *
+     * @param id             идентификатор выставки
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibitions"
+     */
     @GetMapping("/edit/{id}")
     public String editExhibition(@PathVariable Long id, Model model, Authentication authentication) {
         Exhibition exhibition = exhibitionService.findById(id);
@@ -114,6 +148,19 @@ public class ExhibitionController {
     }
 
 
+    /**
+     * Сохраняет обновлённую выставку.
+     *
+     * @param id             идентификатор выставки
+     * @param title          название
+     * @param curatorEmail   email куратора
+     * @param startDate      дата начала
+     * @param endDate        дата окончания
+     * @param description    описание
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return перенаправление или шаблон с ошибкой
+     */
     @PostMapping("/save")
     public String saveExhibition(@RequestParam Long id,
                                  @RequestParam String title,
@@ -166,6 +213,12 @@ public class ExhibitionController {
         return "redirect:/exhibitions";
     }
 
+    /**
+     * Удаляет выставку по идентификатору.
+     *
+     * @param id идентификатор удаляемой выставки
+     * @return перенаправление на список выставок
+     */
     @GetMapping("/delete/{id}")
     public String deleteExhibition(@PathVariable Long id) {
         exhibitionService.deleteById(id);

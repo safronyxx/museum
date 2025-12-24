@@ -4,14 +4,33 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+
+/**
+ * Класс составного первичного ключа для сущности {@link ExhibitionExhibit}.
+ * <p>
+ * Используется для реализации связи «многие ко многим» между выставками и экспонатами.
+ */
 @Embeddable
 public class ExhibitionExhibitId implements Serializable {
 
+    /**
+     * Идентификатор выставки.
+     */
     private Long exhibitionId;
+
+    /**
+     * Идентификатор экспоната.
+     */
     private Long exhibitId;
 
     public ExhibitionExhibitId() {}
 
+    /**
+     * Конструктор для инициализации составного ключа.
+     *
+     * @param exhibitionId идентификатор выставки
+     * @param exhibitId    идентификатор экспоната
+     */
     public ExhibitionExhibitId(Long exhibitionId, Long exhibitId) {
         this.exhibitionId = exhibitionId;
         this.exhibitId = exhibitId;

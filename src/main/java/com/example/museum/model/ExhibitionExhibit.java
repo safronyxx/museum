@@ -2,18 +2,34 @@ package com.example.museum.model;
 
 import jakarta.persistence.*;
 
+
+/**
+ * Связывающая сущность для реализации отношения «многие ко многим»
+ * между выставками ({@link Exhibition}) и экспонатами ({@link Exhibit}).
+ * <p>
+ * Соответствует промежуточной таблице {@code exhibition_exhibits}.
+ */
 @Entity
 @Table(name = "exhibition_exhibits")
 public class ExhibitionExhibit {
 
+    /**
+     * Составной первичный ключ, объединяющий идентификаторы выставки и экспоната.
+     */
     @EmbeddedId
     private ExhibitionExhibitId id;
 
+    /**
+     * Ссылка на выставку.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("exhibitionId")
     @JoinColumn(name = "exhibition_id", nullable = false)
     private Exhibition exhibition;
 
+    /**
+     * Ссылка на экспонат.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("exhibitId")
     @JoinColumn(name = "exhibit_id", nullable = false)
@@ -21,6 +37,12 @@ public class ExhibitionExhibit {
 
     public ExhibitionExhibit() {}
 
+    /**
+     * Конструктор для создания связи между выставкой и экспонатом.
+     *
+     * @param exhibition выставка
+     * @param exhibit    экспонат
+     */
     public ExhibitionExhibit(Exhibition exhibition, Exhibit exhibit) {
         this.exhibition = exhibition;
         this.exhibit = exhibit;

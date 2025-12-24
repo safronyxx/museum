@@ -7,6 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
+/**
+ * Реализация сервиса {@link ExhibitService}.
+ * <p>
+ * Содержит логику поиска экспонатов с поддержкой частичного совпадения
+ * по автору и эпохе (регистронезависимо).
+ */
 @Service
 @Transactional
 public class ExhibitServiceImpl implements ExhibitService {

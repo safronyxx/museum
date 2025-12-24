@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления экспонатами музея.
+ * <p>
+ * Реализует CRUD-операции (создание, чтение, обновление, удаление),
+ * а также поиск по автору и эпохе.
+ */
 @Controller
 @RequestMapping("/exhibits")
 public class ExhibitController {
@@ -21,6 +27,14 @@ public class ExhibitController {
     private final HallService hallService;
     private final com.example.museum.service.UserService userService;
 
+
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param exhibitService сервис для работы с экспонатами
+     * @param hallService    сервис для работы с залами
+     * @param userService    сервис для работы с пользователями
+     */
     public ExhibitController(ExhibitService exhibitService, HallService hallService,
                              com.example.museum.service.UserService userService) {
         this.exhibitService = exhibitService;
@@ -28,6 +42,16 @@ public class ExhibitController {
         this.userService = userService;
     }
 
+
+    /**
+     * Отображает список экспонатов с возможностью поиска.
+     *
+     * @param author         фильтр по автору (опционально)
+     * @param era            фильтр по эпохе (опционально)
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibits"
+     */
     @GetMapping({"", "/"})
     public String listExhibits(
             @RequestParam(required = false) String author,
@@ -59,6 +83,16 @@ public class ExhibitController {
         return "exhibits";
     }
 
+
+    /**
+     * Добавляет новый экспонат.
+     *
+     * @param exhibit        объект экспоната из формы
+     * @param bindingResult  результат валидации
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibits" в случае ошибки, иначе перенаправление на список
+     */
     @PostMapping("/add")
     public String addExhibit(@Valid @ModelAttribute("exhibit") Exhibit exhibit,
                              BindingResult bindingResult,
@@ -78,6 +112,15 @@ public class ExhibitController {
         return "redirect:/exhibits";
     }
 
+
+    /**
+     * Отображает форму редактирования экспоната.
+     *
+     * @param id             идентификатор экспоната
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibits"
+     */
     @GetMapping("/edit/{id}")
     public String editExhibit(@PathVariable Long id, Model model, Authentication authentication) {
         Exhibit exhibit = exhibitService.findById(id);
@@ -98,6 +141,16 @@ public class ExhibitController {
         return "exhibits";
     }
 
+
+    /**
+     * Сохраняет изменения в существующем экспонате.
+     *
+     * @param exhibit        обновлённый объект экспоната
+     * @param bindingResult  результат валидации
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "exhibits" в случае ошибки, иначе перенаправление на список
+     */
     @PostMapping("/save")
     public String saveExhibit(@Valid @ModelAttribute("exhibit") Exhibit exhibit,
                               BindingResult bindingResult,
@@ -118,6 +171,13 @@ public class ExhibitController {
         return "redirect:/exhibits";
     }
 
+
+    /**
+     * Удаляет экспонат по идентификатору.
+     *
+     * @param id идентификатор удаляемого экспоната
+     * @return перенаправление на список экспонатов
+     */
     @GetMapping("/delete/{id}")
     public String deleteExhibit(@PathVariable Long id) {
         exhibitService.deleteById(id);

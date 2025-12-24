@@ -5,26 +5,53 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
+
+/**
+ * Сущность, представляющая пользователя системы.
+ * <p>
+ * Соответствует таблице {@code users} и содержит данные для аутентификации,
+ * роль и полное имя.
+ */
 @Entity
 @Table(name = "users")
 public class User {
+
+    /**
+     * Уникальный идентификатор пользователя.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Email пользователя, используется в качестве логина (уникален).
+     */
     @Column(nullable = false, unique = true)
     private String email;
 
+    /**
+     * Хэш пароля, зашифрованный с использованием BCrypt.
+     */
     @Column(nullable = false)
     private String password;
 
+    /**
+     * Роль пользователя в системе.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
+    /**
+     * Полное имя пользователя.
+     */
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    /**
+     * Дата и время регистрации пользователя.
+     * Поле заполняется автоматически при создании записи.
+     */
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -32,6 +59,14 @@ public class User {
 
     public User() {}
 
+    /**
+     * Конструктор для создания пользователя с заданными параметрами.
+     *
+     * @param email     email (логин)
+     * @param password  пароль в открытом виде (будет зашифрован отдельно)
+     * @param role      роль пользователя
+     * @param fullName  полное имя
+     */
     public User(String email, String password, Role role, String fullName) {
         this.email = email;
         this.password = password;

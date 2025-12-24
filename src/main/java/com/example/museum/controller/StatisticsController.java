@@ -14,6 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+/**
+ * Контроллер для отображения статистической информации о работе музея.
+ * <p>
+ * Формирует данные для текстовой гистограммы посещаемости выставок
+ * и круговой диаграммы распределения выставок по гидам.
+ * Доступ ограничен ролями {@code GUIDE}, {@code ADMIN} и {@code SUPER_ADMIN}.
+ */
 @Controller
 public class StatisticsController {
 
@@ -21,6 +29,14 @@ public class StatisticsController {
     private final VisitRepository visitRepository;
     private final com.example.museum.service.UserService userService;
 
+
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param exhibitionRepository репозиторий для работы с выставками
+     * @param visitRepository      репозиторий для работы с посещениями
+     * @param userService          сервис для работы с пользователями
+     */
     public StatisticsController(ExhibitionRepository exhibitionRepository,
                                 VisitRepository visitRepository,
                                 com.example.museum.service.UserService userService) {
@@ -29,6 +45,16 @@ public class StatisticsController {
         this.userService = userService;
     }
 
+
+    /**
+     * Отображает страницу статистики с двумя видами визуализации:
+     * 1. Текстовая гистограмма — количество посещений по выставкам.
+     * 2. Круговая диаграмма (Chart.js) — распределение выставок по гидам.
+     *
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "statistics"
+     */
     @GetMapping("/statistics")
     public String showStatistics(Model model, Authentication authentication) {
         List<Exhibition> exhibitions = exhibitionRepository.findAll();

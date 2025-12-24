@@ -3,6 +3,13 @@ package com.example.museum.service;
 import com.example.museum.model.User;
 import java.util.List;
 
+
+/**
+ * Интерфейс сервиса для управления пользователями.
+ * <p>
+ * Предоставляет методы для CRUD-операций, проверки существования по email
+ * и получения списка гидов.
+ */
 public interface UserService {
     List<User> findAll();
     User findById(Long id);

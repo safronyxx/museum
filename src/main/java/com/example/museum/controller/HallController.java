@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления информацией о залах музея.
+ * <p>
+ * Обеспечивает операции просмотра, поиска, добавления, редактирования и удаления залов.
+ * Доступ к функциям управления (добавление, редактирование, удаление) ограничен ролями
+ * {@code ADMIN} и {@code SUPER_ADMIN}.
+ */
 @Controller
 @RequestMapping("/halls")
 public class HallController {
@@ -18,12 +25,29 @@ public class HallController {
     private final HallService hallService;
     private final com.example.museum.service.UserService userService;
 
+
+    /**
+     * Конструктор для внедрения зависимостей через Spring.
+     *
+     * @param hallService сервис для работы с залами
+     * @param userService сервис для работы с пользователями (используется для получения данных текущего пользователя)
+     */
     public HallController(HallService hallService,
                           com.example.museum.service.UserService userService) {
         this.hallService = hallService;
         this.userService = userService;
     }
 
+
+    /**
+     * Отображает список всех залов с возможностью поиска по названию и этажу.
+     *
+     * @param name          фильтр по названию зала (опционально)
+     * @param floor         фильтр по этажу (опционально)
+     * @param model         объект модели для передачи данных в представление
+     * @param authentication объект аутентификации Spring Security
+     * @return имя шаблона Thymeleaf "halls"
+     */
     @GetMapping({"", "/"})
     public String listHalls(
             @RequestParam(required = false) String name,
@@ -53,7 +77,15 @@ public class HallController {
         return "halls";
     }
 
-
+    /**
+     * Добавляет новый зал в систему.
+     *
+     * @param hall           объект зала, полученный из формы
+     * @param bindingResult  результат валидации входных данных
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "halls" в случае ошибки валидации, иначе перенаправление на список залов
+     */
     @PostMapping("/add")
     public String addHall(@Valid @ModelAttribute("hall") Hall hall,
                           BindingResult bindingResult,
@@ -72,6 +104,15 @@ public class HallController {
         return "redirect:/halls";
     }
 
+
+    /**
+     * Отображает форму редактирования существующего зала.
+     *
+     * @param id             идентификатор зала
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "halls"
+     */
     @GetMapping("/edit/{id}")
     public String editHall(@PathVariable Long id, Model model, Authentication authentication) {
         Hall hall = hallService.findById(id);
@@ -91,6 +132,15 @@ public class HallController {
         return "halls";
     }
 
+    /**
+     * Сохраняет обновлённые данные зала.
+     *
+     * @param hall           обновлённый объект зала
+     * @param bindingResult  результат валидации
+     * @param model          объект модели
+     * @param authentication объект аутентификации
+     * @return имя шаблона "halls" в случае ошибки, иначе перенаправление
+     */
     @PostMapping("/save")
     public String saveHall(@Valid @ModelAttribute("hall") Hall hall,
                            BindingResult bindingResult,
@@ -110,6 +160,14 @@ public class HallController {
         return "redirect:/halls";
     }
 
+    /**
+     * Удаляет зал по его идентификатору.
+     * <p>
+     * Удаление возможно только для пользователей с соответствующими правами.
+     *
+     * @param id идентификатор удаляемого зала
+     * @return перенаправление на страницу списка залов
+     */
     @GetMapping("/delete/{id}")
     public String deleteHall(@PathVariable Long id) {
         hallService.deleteById(id);

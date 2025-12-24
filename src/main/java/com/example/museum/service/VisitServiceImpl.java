@@ -7,6 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
+/**
+ * Реализация сервиса {@link VisitService}.
+ * <p>
+ * Обеспечивает бизнес-логику для получения списка посещений
+ * с сортировкой по возрастанию или убыванию названия выставки.
+ */
 @Service
 @Transactional
 public class VisitServiceImpl implements VisitService {

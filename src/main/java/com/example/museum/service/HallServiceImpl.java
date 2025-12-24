@@ -7,6 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
+/**
+ * Реализация сервиса {@link HallService}.
+ * <p>
+ * Реализует логику поиска залов с поддержкой частичного совпадения по названию
+ * и точного совпадения по этажу.
+ */
 @Service
 @Transactional
 public class HallServiceImpl implements HallService {

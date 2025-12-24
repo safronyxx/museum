@@ -11,6 +11,13 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+/**
+ * Конфигурационный компонент, отвечающий за инициализацию базовых данных
+ * при первом запуске приложения. Создаёт пользователей по умолчанию
+ * и набор постоянных выставок, привязанных к гидам.
+ * <p>
+ * Инициализация выполняется один раз после полной загрузки контекста Spring.
+ */
 @Component
 public class AppInitializer {
 
@@ -18,6 +25,14 @@ public class AppInitializer {
     private final ExhibitionRepository exhibitionRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    /**
+     * Конструктор для внедрения зависимостей через Spring.
+     *
+     * @param userRepository           репозиторий для работы с пользователями
+     * @param exhibitionRepository     репозиторий для работы с выставками
+     * @param passwordEncoder          компонент для хеширования паролей
+     */
     public AppInitializer(UserRepository userRepository,
                           ExhibitionRepository exhibitionRepository,
                           PasswordEncoder passwordEncoder) {
@@ -26,6 +41,13 @@ public class AppInitializer {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Инициализирует базовые данные: создаёт пользователей с разными ролями
+     * и шесть постоянных выставок, каждая из которых привязана к одному из гидов.
+     * <p>
+     * Метод помечен аннотацией {@link PostConstruct}, поэтому вызывается
+     * автоматически после создания бина Spring.
+     */
     @PostConstruct
     public void init() {
         User guide1 = createDefaultUser("guide1@museum.com", "guidepass", Role.GUIDE, "Андрей Семёнович Крыжанов");
@@ -78,6 +100,16 @@ public class AppInitializer {
                 LocalDate.of(2100, 1, 1));
     }
 
+
+    /**
+     * Создаёт пользователя с заданными параметрами, если он ещё не существует в базе данных.
+     *
+     * @param email        email пользователя (используется как логин)
+     * @param rawPassword  пароль в открытом виде (будет зашифрован)
+     * @param role         роль пользователя
+     * @param fullName     полное имя пользователя
+     * @return созданный объект {@link User} или существующий из БД, если email уже занят
+     */
     private User createDefaultUser(String email, String rawPassword, Role role, String fullName) {
         if (!userRepository.existsByEmail(email)) {
             User user = new User(email, passwordEncoder.encode(rawPassword), role, fullName);
@@ -88,6 +120,15 @@ public class AppInitializer {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    /**
+     * Создаёт выставку с заданными параметрами, если выставка с таким названием ещё не существует.
+     *
+     * @param title       название выставки
+     * @param description описание выставки
+     * @param curator     объект пользователя-гида, отвечающего за выставку
+     * @param startDate   дата начала выставки
+     * @param endDate     дата окончания выставки
+     */
     private void createDefaultExhibition(String title, String description, User curator,
                                          LocalDate startDate, LocalDate endDate) {
         if (exhibitionRepository.countByTitle(title) == 0) {

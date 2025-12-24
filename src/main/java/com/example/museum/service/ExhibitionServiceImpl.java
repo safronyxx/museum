@@ -7,6 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
+/**
+ * Реализация сервиса {@link ExhibitionService}.
+ * <p>
+ * Обеспечивает бизнес-логику для работы с выставками и делегирует
+ * операции доступа к данным репозиторию {@link ExhibitionRepository}.
+ */
 @Service
 @Transactional
 public class ExhibitionServiceImpl implements ExhibitionService {

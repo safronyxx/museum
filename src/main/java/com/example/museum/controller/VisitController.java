@@ -13,6 +13,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+
+/**
+ * Контроллер для управления посещениями выставок.
+ * <p>
+ * Обеспечивает просмотр истории посещений и регистрацию нового визита.
+ * Для посетителей доступна только их собственная история,
+ * для администраторов и суперадминистраторов — полный журнал.
+ */
 @Controller
 @RequestMapping("/visits")
 public class VisitController {
@@ -21,6 +29,14 @@ public class VisitController {
     private final ExhibitionService exhibitionService;
     private final UserService userService;
 
+
+    /**
+     * Конструктор для внедрения зависимостей.
+     *
+     * @param visitService         сервис для работы с посещениями
+     * @param exhibitionService    сервис для работы с выставками
+     * @param userService          сервис для работы с пользователями
+     */
     public VisitController(VisitService visitService,
                            ExhibitionService exhibitionService,
                            UserService userService) {
@@ -29,6 +45,18 @@ public class VisitController {
         this.userService = userService;
     }
 
+
+    /**
+     * Отображает страницу "Посещения", которая включает:
+     * - форму регистрации нового посещения;
+     * - таблицу истории посещений (зависит от роли пользователя).
+     *
+     * @param sort               параметр сортировки (asc/desc)
+     * @param model              объект модели
+     * @param authentication     объект аутентификации
+     * @param message            опциональное сообщение (например, об успешной регистрации)
+     * @return имя шаблона "visits"
+     */
     @GetMapping({"", "/"})
     public String showVisitsAndForm(
             @RequestParam(required = false) String sort,
@@ -75,6 +103,17 @@ public class VisitController {
         return "visits";
     }
 
+
+    /**
+     * Регистрирует новое посещение выставки.
+     * <p>
+     * Email посетителя автоматически устанавливается на основе данных аутентификации.
+     *
+     * @param visit              объект посещения из формы
+     * @param authentication     объект аутентификации
+     * @param redirectAttributes атрибуты для передачи сообщения после редиректа
+     * @return перенаправление на страницу посещений с сообщением об успехе
+     */
     @PostMapping("/add")
     public String addVisit(@ModelAttribute Visit visit,
                            Authentication authentication,
