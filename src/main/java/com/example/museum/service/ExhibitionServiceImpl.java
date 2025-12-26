@@ -24,6 +24,7 @@ public class ExhibitionServiceImpl implements ExhibitionService {
         this.exhibitionRepository = exhibitionRepository;
     }
 
+
     @Override
     public List<Exhibition> findAll() {
         return exhibitionRepository.findAll();
